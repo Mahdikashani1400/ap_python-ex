@@ -1,2 +1,1 @@
-
-find_rank_of_student(40030)
+add student ce 10
