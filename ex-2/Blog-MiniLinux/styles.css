@@ -1,0 +1,53 @@
+@font-face {
+    font-family:"Consolas" ;
+    src: url(./fonts/consola.ttf);
+}
+body{
+    /* font-family:"Consolas" ; */
+    background: #E8E8DC;
+    margin: 0px;
+}
+.title{
+    color: black;
+    letter-spacing: 4px;
+    margin-left: 250px;
+    width: 300px;
+    text-align: center;
+}
+#container{
+    top: 500px;
+    left: 100px;
+    width: 630px;
+    font-family:"Consolas" ;
+    font-size: 1.2em;
+    color: #333;
+    text-align: justify;
+    position: absolute;
+}
+
+.image{
+    width: 300px;
+    height: 180px;
+    border: 3px solid black;
+    position: absolute;
+}
+#ML1{
+    top: 100px;
+    left: 100px;
+    border-top-left-radius: 25px;
+}
+#ML2{
+    top: 100px;
+    left: 400px;
+    border-top-right-radius: 25px;
+}
+#ML3{
+    top: 280px;
+    left: 100px;
+    border-bottom-left-radius: 25px;
+}
+#ML4{
+    top: 280px;
+    left: 400px;
+    border-bottom-right-radius: 25px;
+}

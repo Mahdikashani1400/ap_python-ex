@@ -132,7 +132,7 @@ def add_student(dep,num):
 
       
 
-def add_professor(dep,id,name,age):
+def add_professor(dep,id,name,age,courses_input):
     has_professor = False
     
     for  professor in datas['professors']:
@@ -141,11 +141,10 @@ def add_professor(dep,id,name,age):
 
             print("professor with this id already exists")
     if has_professor is False:
-            courses_input = input()
           #   courses_input = 'math english varzesh'
             
             datas["professors"].append({
-                "dep":dep,"id":id,"name":name,"age":age,"courses_skills":courses_input.split(' '),"courses":[]
+                "dep":dep,"id":id,"name":name,"age":age,"courses_skills":courses_input,"courses":[]
             })  
 
 
@@ -237,39 +236,30 @@ def register_course(course_name,num_student):
 def submit_grades_course(course_name):
      if has_course(course_name):
           for course in datas['courses']:
-               if course['name']==course_name:
+           if course['name']==course_name:
                     if len(course['students'])==1:
                         print("no student has taken this course")
-                    if course['grade_state']:
+                    elif course['grade_state']:
                             print("grades have already been recorded")
                     else:
-                            # grades = [round(float(grade),2) for grade in input().split()] 
-                            grades_input = input().split() 
-                            grades = []
-                            for grade in grades_input :
-                                 try:
-                                      grades.append(float(grade))
-                                 except:
-                                      pass     
-                  #    grades = [18.0,17.45,13,14.5] 
-                         #    test_grades = [float(num)<0 or float(num)>20 or (len(str(num))>1 and str(num)[0]=='0') for num in grades]  
-                           
-
+                         
+                            grades = [float(grade) for grade in input().split()] 
+                         #    grades = [18.0,17.45,13,14.5] 
+                            test_grades = [float(num)<0 or float(num)>20 or (len(str(num))>1 and str(num)[0]=='0') for num in grades]  
                                 
                             if(len(grades)!=len(course['students'])-1):
                                  print("the number of grades and students are not equal")
-                            else:
+                            elif not True in test_grades:
                                    course["grade_state"] = True
                                    course['students'].sort(key=lambda x :x['num'])
-                                 
-                                   grade_avg_course =  float(sum(grades)/len(grades))
+                                   grade_avg_course = float(sum(grades)/len(grades))
                                   
-                                   course['grade_avg'] =grade_avg_course     
+                                   course['grade_avg'] =grade_avg_course
                                    for i in range(len(grades)):
-                                      
-                                        course['students'][i+1]['grade']= grades[i]
-                                        get_avg_grade_student(course["students"][i+1]['num'],'update')        
-                    
+
+                                             course['students'][i+1]['grade']= grades[i]
+                                             get_avg_grade_student(course["students"][i+1]['num'],'update')   
+                    break
      else:
           print("there is no course with this name")
 
@@ -284,21 +274,8 @@ def num_2point(num):
           num_round = str(num_round)+'0'
      return num_round     
 
-
-# def submit_avg_grade_students(num_students,grades):
-#      grade_sum = 0
-     
-#      for student in datas["students"]:
-#           for i in range(len(grades)):
-#                if student['num'] == num_students[i]:
-#                     student['']
-                    
                     
                
-     
-     
-     
-
 
 
 
@@ -331,10 +308,7 @@ def get_avg_grade_student(num_student,state=""):
                     
                     for student in course['students']:
                             if student['num']==num_student:
-                                try:
-                                     count_unit +=course['unit']
-                                except:
-                                     pass     
+                                count_unit +=course['unit']
                                 grade_exist = True
                                 # print(student['grade'])
                                 grade_sum+=(student['grade']*course['unit'])
@@ -343,7 +317,7 @@ def get_avg_grade_student(num_student,state=""):
                for student in datas['students']:
                     if num_student == student['num']:
                          if count_unit!=0:
-                              student['grade_avg'] = float(grade_sum/count_unit)
+                              student['grade_avg'] = round(float(grade_sum/count_unit),2)
                if state!="update":
                     if count_unit==0:
                          print(num_2point(0))
@@ -374,20 +348,13 @@ def find_rank_of_student(num_student):
 
            for student in datas['students']:
                 if student['dep']==dep_student:
-                     try:
-                         students_target.append(student)      
-                     except:
-                          pass                           
+                     students_target.append(student)         
                 # if student["dep"]==dep_student:
                 #      students_target.append(student)
             
            special_grades = list(set([student['grade_avg'] for student in students_target]))
            special_grades.sort(reverse=True)   
-           try:
-               print(int(special_grades.index(grade_student)+1))
-           except:
-                          pass         
-
+           print(special_grades.index(grade_student)+1)              
         #    print(special_grades.index(grade_student)+1)              
                   
                 
@@ -426,7 +393,7 @@ def show_the_report_card_of_student(num_student):
           if(num_student==student['num']):
                student_info.append(f"department: {student['dep']}")
      if(has_student(num_student)):
-          datas['courses'].sort(key=lambda x : x['dep'],reverse=True)
+          datas['courses'].sort(key=lambda x : x['dep'])
           for course in datas['courses']:
                for student in course['students']:
                     if num_student == student['num']:
@@ -470,14 +437,15 @@ def chart_on_grades(course_name,avg):
                     valid_command = True
                
                     avg_course_var = avg_of_course(course_name)
-                    if avg>=avg_course_var:
-                         course['grade_avg']=float(avg-avg_course_var)
+                    if avg>avg_course_var:
+                         course['grade_avg']+=round(float(avg-avg_course_var),2)
                          for student in course['students']:
                               if student['num']!=0:
 
+                                   # print(round(avg-avg_course_var,2))
 
                                    
-                                   student['grade']=float(avg-avg_course_var)
+                                   student['grade']+=round(float(avg-avg_course_var),2)
                                   
                                    if(student['grade']>20):
                                       student['grade'] = 20
@@ -494,94 +462,100 @@ def chart_on_grades(course_name,avg):
     
 
 
-# add_student("iE",40022)
-# add_student("iE",40029)
-# add_student("iE",40028)
-# add_student("iE",40025)
-# # add_student("iE",40030)
-# # add_student("iE",40035)
-# add_professor("iE",345,"ahmad",49)
-# # # print(datas['professors'])
-# add_course("iE","english",4,"mon",8,11)
-# # add_course("iE","math",4,"mon",12,14)
-# # add_course("iE","varzesh",2,"san",15,18)
-# register_course("english",40022)
-# register_course("english",40029)
-# register_course("english",40028)
+add_student("iE",40022)
+add_student("iE",40029)
+add_student("iE",40028)
+add_student("iE",40025)
+# add_student("iE",40030)
+# add_student("iE",40035)
+add_professor("iE",345,"ahmad",49,['english','tarikh'])
+# # print(datas['professors'])
+add_course("iE","english",4,"mon",8,11)
+add_course("iE","tarikh",1,"sun",8,11)
+# add_course("iE","math",4,"mon",12,14)
+# add_course("iE","varzesh",2,"san",15,18)
+register_course("english",40022)
+register_course("english",40029)
+register_course("english",40028)
 # register_course("english",40025)
-# # register_course("english",40030)
-# # register_course("math",40030)
-# # register_course("varzesh",40030)
-# # register_course("math",40035)
-# # submit_grades_course("english",[20,18])
+register_course("tarikh",40028)
+register_course("tarikh",40025)
+# register_course("english",40030)
+# register_course("math",40030)
+# register_course("varzesh",40030)
+# register_course("math",40035)
+# submit_grades_course("english",[20,18])
+submit_grades_course("english")
+submit_grades_course("tarikh")
 # submit_grades_course("english")
-# # submit_grades_course("english")
-# # submit_grades_course("math",[13,17])
-# # submit_grades_course("varzesh",[19])
-# # get_grade_student("english",40030)
-# # get_avg_grade_student(40025)
-# # find_rank_of_student(40030)
-# # drop_course("math",40030)
-# # drop_course("varzesh",40030)
-# # show_the_report_card_of_student(40025)
-# # show_the_report_card_of_student(40030)
-# # chart_on_grades('english',19.2)
+# submit_grades_course("math",[13,17])
+# submit_grades_course("varzesh",[19])
+# get_grade_student("english",40030)
+get_avg_grade_student(40025)
+find_rank_of_student(40022)
+find_rank_of_student(40025)
+find_rank_of_student(40028)
+find_rank_of_student(40029)
+# find_rank_of_student(40028)
+# drop_course("math",40030)
+# drop_course("varzesh",40030)
+# show_the_report_card_of_student(40025)
+# show_the_report_card_of_student(40030)
+# chart_on_grades('english',19.2)
           
 
 
-# pprint(datas)        
+pprint(datas)        
 # print('11.00')
 
 def split_input(user_input):
-     try:
-            input_list=(user_input.split(" ")[0]+" "+user_input.split(' ')[1])
-     except:
-          ""        
+    
+     input_list=(user_input.split(" ")[0]+" "+user_input.split(' ')[1])
+         
      return input_list
 
-while True:
-     user_input = input()
-     input_spread = user_input.split()
-  
+# while True:
+#      user_input = input()
+#      input_spread = user_input.split()
 
-     if user_input=="exit":
-          break
-     elif split_input(user_input)=='add student':
-         add_student(input_spread[2],int(input_spread[3]))
+#      if user_input=="exit":
+#           break
+#      elif split_input(user_input)=='add student':
+#          add_student(input_spread[2],int(input_spread[3]))
         
-     elif split_input(user_input)=="add professor":
+#      elif split_input(user_input)=="add professor":
            
-           add_professor(input_spread[2],int(input_spread[3]),input_spread[4],int(input_spread[5]))
+#            add_professor(input_spread[2],int(input_spread[3]),input_spread[4],int(input_spread[5]))
          
-     elif split_input(user_input)=="add course":
-         add_course(input_spread[2],
-                     input_spread[3],int(input_spread[4]),input_spread[5],int(input_spread[6]),int(input_spread[7]))
+#      elif split_input(user_input)=="add course":
+#          add_course(input_spread[2],
+#                      input_spread[3],int(input_spread[4]),input_spread[5],int(input_spread[6]),int(input_spread[7]))
           
-     elif split_input(user_input)=="take course":
-           register_course(input_spread[2],int(input_spread[-1]))
+#      elif split_input(user_input)=="take course":
+#            register_course(input_spread[2],int(input_spread[-1]))
           
-     elif split_input(user_input)=="add grades" and input_spread[-1]=="course":
-           submit_grades_course(input_spread[3])
+#      elif split_input(user_input)=="add grades" and input_spread[-1]=="course":
+#            submit_grades_course(input_spread[3])
           
-     elif split_input(user_input)=="find grade":
-           get_grade_student(input_spread[3],int(input_spread[-1]))
+#      elif split_input(user_input)=="find grade":
+#            get_grade_student(input_spread[3],int(input_spread[-1]))
           
-     elif split_input(user_input)=="find GPA":
-           get_avg_grade_student(int(input_spread[-1]))
+#      elif split_input(user_input)=="find GPA":
+#            get_avg_grade_student(int(input_spread[-1]))
           
-     elif split_input(user_input)=="find rank":
-          find_rank_of_student(int(input_spread[-1]))
+#      elif split_input(user_input)=="find rank":
+#           find_rank_of_student(int(input_spread[-1]))
           
-     elif split_input(user_input)=="drop course":
-          drop_course(input_spread[2],int(input_spread[-1]))
+#      elif split_input(user_input)=="drop course":
+#           drop_course(input_spread[2],int(input_spread[-1]))
           
-     elif split_input(user_input)=="show the" and input_spread[2]=='report':
-          show_the_report_card_of_student(int(input_spread[-1]))
-          # for i in answer_show_card:
+#      elif split_input(user_input)=="show the" and input_spread[2]=='report':
+#           show_the_report_card_of_student(int(input_spread[-1]))
+#           # for i in answer_show_card:
           
 
-     elif split_input(user_input)=="have mercy":
-          chart_on_grades(input_spread[6],float(input_spread[-1]))
+#      elif split_input(user_input)=="have mercy":
+#           chart_on_grades(input_spread[6],float(input_spread[-1]))
 
 
 
